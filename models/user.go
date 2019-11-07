@@ -513,7 +513,7 @@ func ChoosingTeam(imei string, cards BuyCards) BuyCards {
 func BuyingCard(buyCard BuyCard, uimei string) bool {
 	if ok, _ := AddVJ(uimei, buyCard.DecreaseVJ, false); ok {
 		AddCard(buyCard.BoughtCard, uimei)
-		AddVJ(uimei, 0, true)
+		AddVJ(uimei, buyCard.DecreaseVJ, true)
 		return true
 	} else {
 		return false
