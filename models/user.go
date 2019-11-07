@@ -332,8 +332,8 @@ func CreateVj(uimei string) (r RemainingTime, err error) {
 		}
 		Update(convertUserStructToUser(user))
 		AddVJ(uimei, vj, true)
-		//orm.NewOrm().Update(convertUserStructToUser(user))
-		fmt.Println(user.CreateVjTime)
+		//		orm.NewOrm().Update(convertUserStructToUser(user))
+		//		fmt.Println(user.CreateVjTime)
 		remainTime = RemainingTime{remainingTime, addedVj}
 	} else {
 		remainTime = RemainingTime{getRemainingTime(user.Level) - delta, 0}
@@ -350,13 +350,13 @@ func getDeltaTime(userTimeString string) (delta int) {
 	userTime, _ := time.Parse(time.UnixDate, userTimeString)
 	now, _ := time.Parse(time.UnixDate,
 		time.Now().UTC().Format(time.UnixDate))
-	fmt.Println("now(time):", now)
-	fmt.Println("userTime(time):", userTime)
-	fmt.Println("userTime(string):", userTimeString)
+	//	fmt.Println("now(time):", now)
+	//	fmt.Println("userTime(time):", userTime)
+	//	fmt.Println("userTime(string):", userTimeString)
 	d := now.Sub(userTime)
 	dd := d.Seconds()
-	fmt.Println(d)
-	fmt.Println(userTimeString)
+	//	fmt.Println(d)
+	//	fmt.Println(userTimeString)
 	if dd > 100 {
 		return 0
 	}
@@ -522,10 +522,10 @@ func BuyingCard(buyCard BuyCard, uimei string) bool {
 
 func ForooshCard(fCard ForooshCardStr, uimei string) bool {
 	SetUsers()
-	fmt.Println("foroosh card:", fCard)
+	//	fmt.Println("foroosh card:", fCard)
 	user := GetUserStruct(uimei)
 	myCards := user.Cards
-	fmt.Println("my cads befor foroosh:", myCards)
+	//	fmt.Println("my cads befor foroosh:", myCards)
 	increaseVj := getCardValue(user.Level, len(fCard.Card.WinningColors), len(fCard.Card.LoosingColors)) * 8 / 10
 	for i, card := range myCards {
 		if fCard.Card.Number == card.Number {
@@ -534,7 +534,7 @@ func ForooshCard(fCard ForooshCardStr, uimei string) bool {
 		}
 	}
 	Update(convertUserStructToUser(user))
-	fmt.Println("my cads after foroosh:", myCards)
+	//	fmt.Println("my cads after foroosh:", myCards)
 	AddVJ(uimei, increaseVj, true)
 	return true
 }
@@ -545,8 +545,8 @@ func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
 
 	maxVjAmount := user.MaxVj
 	//fmt.Println(user)
-	fmt.Println("user credit: ", user.Credit)
-	fmt.Println("vj amount: ", vjAmount)
+	//	fmt.Println("user credit: ", user.Credit)
+	//	fmt.Println("vj amount: ", vjAmount)
 	if user.Credit+vjAmount >= 0 {
 		increasedVj := 0
 		if user.Credit+vjAmount <= maxVjAmount {
@@ -562,7 +562,7 @@ func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
 			}
 			Update(convertUserStructToUser(user))
 		}
-		fmt.Println("addVj : true")
+		//		fmt.Println("addVj : true")
 		if increasedVj < 0 {
 			increasedVj = 0
 		}
@@ -581,7 +581,7 @@ func AddCard(card Card, uimei string) {
 		user.Cards[crd[0]] += int(crd[1])
 	}*/
 	user.Cards = append(user.Cards, card)
-	fmt.Println("adding card")
+	//	fmt.Println("adding card")
 	Update(convertUserStructToUser(user))
 }
 
@@ -595,8 +595,8 @@ func StartMatch(imeis Imeis, isCup bool) (MatchResult, int) {
 	myCards := getCards(me.Cards)
 	opCards := getCards(op.Cards)
 
-	fmt.Println(myCards)
-	fmt.Println(opCards)
+	//	fmt.Println(myCards)
+	//	fmt.Println(opCards)
 
 	mFinalCards, oFinalCards := DoMAtch(myCards, opCards)
 
@@ -635,8 +635,8 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 	//fmt.Println(oCards)
 
 	// *winner = 1 means i won the match, -1 means oponent won, 0 means equal*
-	fmt.Println(len(mCards))
-	fmt.Println(len(oCards))
+	//	fmt.Println(len(mCards))
+	//	fmt.Println(len(oCards))
 	if len(oCards) > len(mCards) {
 		winner = -1
 		if isCup {
@@ -658,8 +658,8 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 		myXp = getXpPrize(me.Level, op.Level)
 		if !isCup {
 			me.Xp += myXp
-			fmt.Println("me.XP", me.Xp)
-			fmt.Println("max Xp", getMaxXp(me.Level))
+			//			fmt.Println("me.XP", me.Xp)
+			//			fmt.Println("max Xp", getMaxXp(me.Level))
 			if me.Xp > getMaxXp(me.Level) {
 				me.Level++
 				me.Xp = 0
@@ -667,7 +667,7 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 				setLevelForHome(me.Imei, me.Level)
 			}
 		}
-		fmt.Println("my increasing xp:", getXpPrize(me.Level, op.Level))
+		//		fmt.Println("my increasing xp:", getXpPrize(me.Level, op.Level))
 	} else if winner == -1 {
 		//		opXp = getXpPrize(op.Level, me.Level)
 		//		if !isCup {
@@ -678,8 +678,8 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 
 	//fmt.Println(winner)
 
-	fmt.Println("oCards(my loss): ", oCards)
-	fmt.Println("mCards(op loss): ", mCards)
+	//	fmt.Println("oCards(my loss): ", oCards)
+	//	fmt.Println("mCards(op loss): ", mCards)
 
 	//****increasing "loosedGames" for loss cards***
 	//loss: [["personNumber","if loosedGame","if colorAdded"],...]
@@ -723,8 +723,8 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 			myLoss = append(myLoss, []string{card.Number, "0", "", card.WinningColors, card.LoosingColors})
 		}
 	}
-	fmt.Println("my loss: ", myLoss)
-	fmt.Println("op loss: ", opLoss)
+	//	fmt.Println("my loss: ", myLoss)
+	//	fmt.Println("op loss: ", opLoss)
 
 	//fmt.Println(mCards)
 	//fmt.Println(oCards)
@@ -757,8 +757,8 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 	_, myVjPrize = AddVJ(me.Imei, myVjPrize, false)
 	_, opVjPrize = AddVJ(op.Imei, opVjPrize, false)
 
-	fmt.Println("myVjPrize:", myVjPrize)
-	fmt.Println("opVjPrize:", opVjPrize)
+	//	fmt.Println("myVjPrize:", myVjPrize)
+	//	fmt.Println("opVjPrize:", opVjPrize)
 
 	//updating data
 	matchId := SaveMatchCard(myCards, opCards, myLoss, opLoss, me.Imei, op.Imei, myVjPrize, opVjPrize)
@@ -829,7 +829,7 @@ func getXpPrize(level1 int, level2 int) int {
 	if xpPrize.Levels == nil {
 		readXpJsonFiles()
 	}
-	fmt.Println(level1)
+	//	fmt.Println(level1)
 	return xpPrize.Levels[level1].WinOthersPrize[level2]
 }
 
@@ -934,7 +934,7 @@ func DoMAtch(myCards []Card, opCards []Card) ([]Card, []Card) {
 }
 
 func sendCardsBack(mCards []Card, oCards []Card, cCards []Card, trn int) ([]Card, []Card, []Card, int) {
-	fmt.Println("sending cards back")
+	//	fmt.Println("sending cards back")
 	if trn == 0 {
 		mCards, oCards, cCards = sendCardsBackOpFirst(mCards, oCards, cCards)
 	} else {
@@ -1095,7 +1095,7 @@ func GetMatch(uid string, imeis Imeis) MatchResult {
 	mResult := MatchResult{"", myCards, oponentCards, myLoss, opLoss, m.MyImei, Event{}, 0, m.MyVjPrize,
 		m.OpVjPrize, op.AvatarCode, me.AvatarCode}
 
-	fmt.Println("match result: ", mResult)
+	//	fmt.Println("match result: ", mResult)
 
 	return mResult
 }
@@ -1157,7 +1157,7 @@ func SendMessage(messageId string, message SentMessage) SentMessage {
 
 		bodyJson, _ := json.Marshal(body)
 		mm := Message{messageId, message.Imei1, message.Imei2, string(bodyJson)}
-		fmt.Println(mm)
+		//		fmt.Println(mm)
 		orm.NewOrm().Insert(&mm)
 		addMessageToUsers(messageId, message.Imei1, message.Imei2, message.Owner)
 	} else {
@@ -1168,7 +1168,7 @@ func SendMessage(messageId string, message SentMessage) SentMessage {
 
 		bodyJson, _ := json.Marshal(body)
 		mm := Message{messageId, message.Imei1, message.Imei2, string(bodyJson)}
-		fmt.Println(mm)
+		//		fmt.Println(mm)
 		orm.NewOrm().Update(&mm)
 		bringMessageToFront(messageId, message.Imei1, message.Imei2, message.Owner)
 	}
@@ -1271,7 +1271,7 @@ func push(subscription string, message string) {
 		//		panic(token.Error())
 		fmt.Println("connecting error : ", token.Error())
 	}
-	fmt.Println("subscription:", subscription, "\n message:", message)
+	//	fmt.Println("subscription:", subscription, "\n message:", message)
 
 	c.Publish(subscription, 0, false, message)
 	//	c.Publish("update/id-2", 0, false, "message: johney")
@@ -1318,7 +1318,7 @@ func ChangeName(imei string, name Name) Name {
 	newName := name.Name
 	if ok, _ := AddVJ(imei, -0, false); ok {
 		user.Name = name.Name
-		fmt.Println("name: ", name.Name)
+		//		fmt.Println("name: ", name.Name)
 		Update(convertUserStructToUser(user))
 		AddVJ(imei, -0, true)
 		SetUserHomes()
