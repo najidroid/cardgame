@@ -89,8 +89,8 @@ type Event struct {
 
 type MatchCards struct {
 	Id        int
-	MyCards   string `orm:"size(1000)"`
-	OpCards   string `orm:"size(1000)"`
+	MyCards   string `orm:"size(1500)"`
+	OpCards   string `orm:"size(1500)"`
 	MyLoss    string
 	OpLoss    string
 	MyImei    string
