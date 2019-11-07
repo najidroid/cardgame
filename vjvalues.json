@@ -1,0 +1,63 @@
+{
+	"levelsValues":[
+			{
+				"safeBox":[60,70],
+				"vjProduce":10 ,
+				"reduceLooseColorePrice":[20,12,5,1],
+				"safeBoxImprovementPriceVj":60,
+				"safeBoxImprovementPriceDiamond":0	 
+			},
+			{
+				"safeBox":[80,120],
+				"vjProduce": 16,
+				"reduceLooseColorePrice":[40,24,10,2],
+				"safeBoxImprovementPriceVj":80 ,
+				"safeBoxImprovementPriceDiamond":0
+			},
+			{
+				"safeBox":[160,200],
+				"vjProduce":25 ,
+				"reduceLooseColorePrice":[80,48,20,4],
+				"safeBoxImprovementPriceVj":160 ,
+				"safeBoxImprovementPriceDiamond":0
+			},
+			{
+				"safeBox":[400,600],
+				"vjProduce":40 ,
+				"reduceLooseColorePrice":[200,120,50,10],
+				"safeBoxImprovementPriceVj":400 ,
+				"safeBoxImprovementPriceDiamond":10
+			},
+			{
+				"safeBox":[900,1200],
+				"vjProduce":60 ,
+				"reduceLooseColorePrice":[450,270,125,22],
+				"safeBoxImprovementPriceVj":900 ,
+				"safeBoxImprovementPriceDiamond":25
+			},
+			{
+				"safeBox":[2000,3000],
+				"vjProduce":90 ,
+				"reduceLooseColorePrice":[1000,600,250,50],
+				"safeBoxImprovementPriceVj":3000 ,
+				"safeBoxImprovementPriceDiamond":50
+			},
+			{
+				"safeBox":[4500,6000],
+				"vjProduce": 140,
+				"reduceLooseColorePrice":[2250,1350,562,12],
+				"safeBoxImprovementPriceVj":4500 ,
+				"safeBoxImprovementPriceDiamond":100
+			},
+			{
+				"safeBox":[10000,20000],
+				"vjProduce": 200,
+				"reduceLooseColorePrice":[4500,2700,1000,20],
+				"safeBoxImprovementPriceVj": 0,
+				"safeBoxImprovementPriceDiamond":0
+			}
+		],
+	"winColorImprovementPrice":[60,120,200,600,1200,3000,6000],
+	"winColorImprovementDiamond":[0,0,0,10,25,50,100],
+	"diamondPrice":40
+}
