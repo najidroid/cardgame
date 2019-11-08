@@ -444,3 +444,19 @@ func (u *UserController) ChooseTeame() {
 
 	u.ServeJSON()
 }
+
+// @Title Get
+// @Description get random oponent
+// @Param	uaddress		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.User
+// @Failure 403 :uimei is empty
+// @router /promotesafebox/:uimei [get]
+func (u *UserController) PromoteSafeBox() {
+	//fmt.Println("hi")
+	uimei := u.GetString(":uimei")
+	decreaseMoney := models.PromoteSafeBox(uimei)
+
+	u.Data["json"] = decreaseMoney
+
+	u.ServeJSON()
+}

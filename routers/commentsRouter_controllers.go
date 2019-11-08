@@ -261,6 +261,15 @@ func init() {
 
     beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"] = append(beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"],
         beego.ControllerComments{
+            Method: "PromoteSafeBox",
+            Router: `/promotesafebox/:uimei`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"] = append(beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"],
+        beego.ControllerComments{
             Method: "RemoveLooseColor",
             Router: `/removeloosecolor/:uimei`,
             AllowHTTPMethods: []string{"post"},

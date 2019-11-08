@@ -137,8 +137,14 @@ type BuyCards struct {
 }
 
 type BuyCard struct {
-	DecreaseVJ int
-	BoughtCard Card
+	DecreaseVJ      int
+	BoughtCard      Card
+	DecreaseDiamond int
+}
+
+type DecreaseMoney struct {
+	DecreaseVJ      int
+	DecreaseDiamond int
 }
 
 type ForooshCardStr struct {
@@ -319,12 +325,11 @@ func Update(this *User) (int64, error) {
 func CreateVj(uimei string) (r RemainingTime, err error) {
 	user := GetUserStruct(uimei)
 	var remainTime RemainingTime
-	delta := getDeltaTime(user.CreateVjTime)
+	remainingTime := getRemainingTime(user.CreateVjTime, user.Level)
 
-	if delta == 0 {
+	if remainingTime == 0 {
 		vj := allVjValues.LevelsValues[user.Level].VjProduce
 		_, addedVj := AddVJ(uimei, vj, false)
-		remainingTime := getRemainingTime(user.Level)
 		if addedVj != 0 {
 			user.CreateVjTime = time.Now().UTC().Format(time.UnixDate)
 		} else {
@@ -336,17 +341,34 @@ func CreateVj(uimei string) (r RemainingTime, err error) {
 		//		fmt.Println(user.CreateVjTime)
 		remainTime = RemainingTime{remainingTime, addedVj}
 	} else {
-		remainTime = RemainingTime{getRemainingTime(user.Level) - delta, 0}
+		remainTime = RemainingTime{remainingTime, 0}
 	}
 
 	return remainTime, nil
 }
 
-func getRemainingTime(level int) int {
-	return 100 * (level + 1) * (level + 1)
+func PromoteSafeBox(uimei string) DecreaseMoney {
+	user := GetUserStruct(uimei)
+	diamondPrice := allVjValues.LevelsValues[user.Level].SafeBoxImprovementPriceDiamond
+	vjPrice := allVjValues.LevelsValues[user.Level].SafeBoxImprovementPriceVj
+	if user.Diamond >= diamondPrice && user.Credit >= vjPrice {
+		user.Credit -= vjPrice
+		user.Diamond -= diamondPrice
+		user.MaxVj = allVjValues.LevelsValues[user.Level].SafeBox[1]
+		fmt.Println("user in promotion:", user)
+		_, err := Update(convertUserStructToUser(user))
+		if err == nil {
+			return DecreaseMoney{vjPrice, diamondPrice}
+		} else {
+			return DecreaseMoney{0, 0}
+		}
+	} else {
+		return DecreaseMoney{0, 0}
+	}
 }
 
-func getDeltaTime(userTimeString string) (delta int) {
+func getRemainingTime(userTimeString string, level int) (delta int) {
+	fmt.Println("100*(level+1)*(level+1)", 100*(level+1)*(level+1))
 	userTime, _ := time.Parse(time.UnixDate, userTimeString)
 	now, _ := time.Parse(time.UnixDate,
 		time.Now().UTC().Format(time.UnixDate))
@@ -355,12 +377,13 @@ func getDeltaTime(userTimeString string) (delta int) {
 	//	fmt.Println("userTime(string):", userTimeString)
 	d := now.Sub(userTime)
 	dd := d.Seconds()
+	fmt.Println("dd", dd)
 	//	fmt.Println(d)
 	//	fmt.Println(userTimeString)
-	if dd > 100 {
+	if int(dd) >= 100*(level+1)*(level+1) {
 		return 0
 	}
-	return int(dd)
+	return 100*(level+1)*(level+1) - int(dd)
 }
 
 func convertUserStructToUser(u *UserStruct) (user *User) {
