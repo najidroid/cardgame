@@ -19,18 +19,11 @@ import (
 )
 
 var (
-	//	UserList map[string]*UserStruct
-	//	HomeList map[string]*Home
-
-	//	RankImeiList []string
-
 	xpPrize     xpJson
 	allVjValues vjValues
 )
 
 func init() {
-	//	UserList = make(map[string]*UserStruct)
-	//	HomeList = make(map[string]*Home)
 	readJsonFiles()
 }
 
@@ -63,147 +56,8 @@ func readXpJsonFiles() {
 	//fmt.Printf("Results: %v\n", xpPrize)
 }
 
-type vjValues struct {
-	LevelsValues []levelValues
-	//1 to 2, 2 to 3, 3 to 4, 4 to 5,5 to 6,6 to 7, 7 to 8
-	WinColorImprovementPrice   []int
-	winColorImprovementDiamond []int
-	DiamondPrice               int
-}
-
-type levelValues struct {
-	//safe box capacity,improved safe box capacity
-	// safe box capacity = base card price
-	SafeBox   []int
-	VjProduce int
-	//2 to 1, 3 to 2, 4 to 3, 5 to 4
-	ReduceLooseColorePrice         []int
-	SafeBoxImprovementPriceVj      int
-	SafeBoxImprovementPriceDiamond int
-}
-
-type xpJson struct {
-	Levels []level
-}
-
-type level struct {
-	Level int
-	// win 1,2,3,4,5,6,7,8
-	WinOthersPrize []int
-}
-
-type MessageStruct struct {
-	MessageId    string
-	Imei1        string
-	Imei2        string
-	MessagesBody [][]string
-	//MessageBody : [["message","number of the owner"],...]
-	// 1: lowerImei
-}
-
-type SentMessage struct {
-	Imei1       string
-	Imei2       string
-	MessageBody string
-	Owner       string
-}
-
-type MatchResult struct {
-	MyState string
-	MyCards []Card
-	OpCards []Card
-	//loss:
-	//[["personNumber","if loosedGame","if colorAdded"],...]
-	MyLoss            [][]string
-	OponentLoss       [][]string
-	MyImei            string
-	MatchEvent        Event
-	IncreasedXp       int
-	MyIncreasedVj     int
-	OpIncreasedVj     int
-	OponentAvatarCode int
-	MyAvatarCode      int
-}
-
-type MyMatchResultStruct struct {
-	MyLoss     [][]int
-	MyEarnedVJ int
-	Event      Event
-	Level      float32
-}
-
-type BuyCards struct {
-	Cards []BuyCard
-}
-
-type BuyCard struct {
-	DecreaseVJ      int
-	BoughtCard      Card
-	DecreaseDiamond int
-}
-
-type DecreaseMoney struct {
-	DecreaseVJ      int
-	DecreaseDiamond int
-}
-
-type ForooshCardStr struct {
-	IncreaseVJ int
-	Card       Card
-}
-
-type Rank struct {
-	TopRank []RankMember
-	MyRank  int
-}
-
-type RankMember struct {
-	Name       string
-	AvatarCode int
-	CardAmount int
-}
-
-type RemainingTime struct {
-	RemainingTime   int
-	IncreasingMoney int
-}
-
-type Color struct {
-	Color        string
-	PersonNumber string
-	Price        int
-}
-
-type TeamState struct {
-	PersonNumber1 string
-	PersonNumber2 string
-}
-
-type Imeis struct {
-	MyImei string
-	OpImei string
-}
-
-type ChatMessage struct {
-	Message      string
-	Imei         string
-	PushMessage  string
-	Subscription string
-}
-
-type Avatar struct {
-	AvatarCode int
-	ReduceVj   int
-}
-
-type Name struct {
-	Name     string
-	ReduceVj int
-}
-
 func SetUsers() []*User {
 	var data []*User
-	//	RankImeiList = append(RankImeiList[0:0])
 
 	orm.NewOrm().QueryTable(new(User)).All(&data)
 
@@ -216,19 +70,6 @@ func SetUsers() []*User {
 	//	}
 
 	return data
-}
-
-func SetUserHomes() {
-	//	if len(HomeList) == 0 {
-	//		var data []*Home
-	//		orm.NewOrm().QueryTable(new(Home)).All(&data)
-
-	//		for _, u := range data {
-	//			HomeList[u.Imei] = u
-	//		}
-	//		fmt.Println(HomeList)
-	//	}
-
 }
 
 func SortRankImeiListByImei(uimei string) {
@@ -368,7 +209,7 @@ func PromoteSafeBox(uimei string) DecreaseMoney {
 }
 
 func getRemainingTime(userTimeString string, level int) (delta int) {
-	fmt.Println("100*(level+1)*(level+1)", 100*(level+1)*(level+1))
+	//	fmt.Println("100*(level+1)*(level+1)", 100*(level+1)*(level+1))
 	userTime, _ := time.Parse(time.UnixDate, userTimeString)
 	now, _ := time.Parse(time.UnixDate,
 		time.Now().UTC().Format(time.UnixDate))
@@ -377,7 +218,7 @@ func getRemainingTime(userTimeString string, level int) (delta int) {
 	//	fmt.Println("userTime(string):", userTimeString)
 	d := now.Sub(userTime)
 	dd := d.Seconds()
-	fmt.Println("dd", dd)
+	//	fmt.Println("dd", dd)
 	//	fmt.Println(d)
 	//	fmt.Println(userTimeString)
 	if int(dd) >= 100*(level+1)*(level+1) {
@@ -686,6 +527,7 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 			if me.Xp > getMaxXp(me.Level) {
 				me.Level++
 				me.Xp = 0
+				me.MaxXp = getMaxXp(me.Level)
 				me.MaxVj = allVjValues.LevelsValues[me.Level].SafeBox[0]
 				setLevelForHome(me.Imei, me.Level)
 			}
@@ -774,11 +616,15 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 	}
 
 	//calculating vjPrize
-	myVjPrize := getVjPrize(me.Level, mCards)
-	opVjPrize := getVjPrize(op.Level, oCards)
-
-	_, myVjPrize = AddVJ(me.Imei, myVjPrize, false)
-	_, opVjPrize = AddVJ(op.Imei, opVjPrize, false)
+	myVjPrize := 0
+	opVjPrize := 0
+	if myState == 1 {
+		myVjPrize = getVjPrize(me.Level, mCards)
+		_, myVjPrize = AddVJ(me.Imei, myVjPrize, false)
+	} else if myState == -1 {
+		opVjPrize = getVjPrize(op.Level, oCards)
+		_, opVjPrize = AddVJ(op.Imei, opVjPrize, false)
+	}
 
 	//	fmt.Println("myVjPrize:", myVjPrize)
 	//	fmt.Println("opVjPrize:", opVjPrize)
@@ -1327,7 +1173,6 @@ func ChangeAvatar(imei string, avatar Avatar) Avatar {
 		user.AvatarCode = newAvatarCode
 		Update(convertUserStructToUser(user))
 		AddVJ(imei, -0, true)
-		SetUserHomes()
 		changeAvatarInMap(imei, newAvatarCode)
 		return Avatar{newAvatarCode, 0}
 	} else {
@@ -1344,7 +1189,6 @@ func ChangeName(imei string, name Name) Name {
 		//		fmt.Println("name: ", name.Name)
 		Update(convertUserStructToUser(user))
 		AddVJ(imei, -0, true)
-		SetUserHomes()
 		changeNameInMap(imei, name.Name)
 		return Name{newName, -0}
 	} else {
