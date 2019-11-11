@@ -142,7 +142,7 @@ type AlleyMarket struct {
 }
 
 type Home struct {
-	HomeId     int `orm:"pk"`
+	Id         int `orm:"pk"`
 	Imei       string
 	Name       string `orm:"size(300)"`
 	Level      int

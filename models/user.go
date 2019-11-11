@@ -261,7 +261,7 @@ func GetOponent(uimei string) (user *UserStruct) {
 	usr := User{Id: randomNum}
 	orm.NewOrm().Read(&usr)
 	//	fmt.Println("user:", usr)
-	if usr.Imei != uimei && len(user.Cards) > 0 {
+	if usr.Imei != uimei && len(usr.Cards) > 0 {
 		return convertUserToUserStruct(&usr)
 	} else {
 		return GetOponent(uimei)

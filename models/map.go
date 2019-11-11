@@ -103,13 +103,13 @@ func (home *Home) AddHome() {
 
 	//	Homes = append(Homes, home)
 
-	if home.HomeId%8 == 1 {
-		alleyMrkt := &AlleyMarket{home.HomeId/8 + 1, 1, "name", time.Now().UTC().Format(time.UnixDate), 5, "state", ""}
+	if home.Id%8 == 1 {
+		alleyMrkt := &AlleyMarket{home.Id/8 + 1, 1, "name", time.Now().UTC().Format(time.UnixDate), 5, "state", ""}
 		orm.NewOrm().Insert(alleyMrkt)
 	}
 
-	if home.HomeId%64 == 1 {
-		townMrkt := &TownMarket{home.HomeId/64 + 1, 1, 1, "name", time.Now().Add(time.Hour * (-12)).UTC().Format(time.UnixDate), 5, "state"}
+	if home.Id%64 == 1 {
+		townMrkt := &TownMarket{home.Id/64 + 1, 1, 1, "name", time.Now().Add(time.Hour * (-12)).UTC().Format(time.UnixDate), 5, "state"}
 		orm.NewOrm().Insert(townMrkt)
 	}
 
@@ -134,7 +134,7 @@ func GetAlley(alleyNumberStr string) (Alley, error) {
 
 	for i := 0; i < max; i++ {
 		//		home := Homes[startHome+i]
-		home := getHome(startHome + i)
+		home := getHome(startHome + 1 + i)
 		homes = append(homes, home)
 		fmt.Println(startHome + i)
 	}
@@ -215,7 +215,8 @@ func AddVjAlley(vjAlley GetVjAlley) VjAlleyResponse {
 
 	if deltaTime.Seconds() > 100 {
 		vjAdded = getVjAmountAlley(alleyMarket.Level)
-		AddVJ(vjAlley.Imei, vjAdded, true)
+		_, finalVjAdded := AddVJ(vjAlley.Imei, vjAdded, true)
+		vjAdded = finalVjAdded
 		alleyMarket.Time = time.Now().UTC().Format(time.UnixDate)
 		updateAlleyMarket(&alleyMarket)
 	}
@@ -244,7 +245,8 @@ func AddVjTown(vjTown GetVjAlley) VjAlleyResponse {
 
 	if deltaTime.Seconds() > 100 {
 		vjAdded = getVjAmountTown(townMarket.Level)
-		AddVJ(vjTown.Imei, vjAdded, true)
+		_, finalVjAdded := AddVJ(vjTown.Imei, vjAdded, true)
+		vjAdded = finalVjAdded
 		townMarket.Time = time.Now().UTC().Format(time.UnixDate)
 		updateTownMarket(&townMarket)
 	}
