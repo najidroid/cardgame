@@ -16,12 +16,12 @@ import (
 )
 
 var (
-	Homes []*Home
-	/*Alleys       []*Alley
-	Towns        []*Town
-	AlleyMarkets []*AlleyMarket
+//	Homes []*Home
+/*Alleys       []*Alley
+Towns        []*Town
+AlleyMarkets []*AlleyMarket
 
-	TownMarkets  []*TownMarket*/
+TownMarkets  []*TownMarket*/
 )
 
 func init() {
@@ -91,9 +91,9 @@ type MatchCap struct {
 }
 
 func SetHomes() {
-	Homes = Homes[:0]
+	//	Homes = Homes[:0]
 	//var Homes []*Home
-	orm.NewOrm().QueryTable(new(Home)).All(&Homes)
+	//	orm.NewOrm().QueryTable(new(Home)).All(&Homes)
 	//fmt.Println(err)
 
 }
@@ -101,7 +101,7 @@ func (home *Home) AddHome() {
 	//fmt.Println("home added?")
 	fmt.Println(orm.NewOrm().Insert(home))
 
-	Homes = append(Homes, home)
+	//	Homes = append(Homes, home)
 
 	if home.HomeId%8 == 1 {
 		alleyMrkt := &AlleyMarket{home.HomeId/8 + 1, 1, "name", time.Now().UTC().Format(time.UnixDate), 5, "state", ""}
@@ -121,17 +121,20 @@ func GetAlley(alleyNumberStr string) (Alley, error) {
 	var homes []*Home
 	startHome := alleyNumber * 8
 	max := 8
-	if len(Homes) == 0 {
-		SetHomes()
-	}
-	if startHome+7 > len(Homes)-1 {
-		max = len(Homes) - startHome
+	//	if len(Homes) == 0 {
+	//		SetHomes()
+	//	}
+	size, _ := orm.NewOrm().QueryTable("home").Count()
+	homesSize := int(size)
+	if startHome+7 > homesSize-1 {
+		max = homesSize - startHome
 	}
 
 	fmt.Println(max)
 
 	for i := 0; i < max; i++ {
-		home := Homes[startHome+i]
+		//		home := Homes[startHome+i]
+		home := getHome(startHome + i)
 		homes = append(homes, home)
 		fmt.Println(startHome + i)
 	}
@@ -140,6 +143,13 @@ func GetAlley(alleyNumberStr string) (Alley, error) {
 	alley := Alley{homes, &alleyMarket, "no name", alleyNumber}
 	fmt.Println(alley)
 	return alley, nil
+}
+
+func getHome(id int) *Home {
+	var home Home
+	orm.NewOrm().QueryTable("Home").Filter("Id", id).RelatedSel().One(&home)
+	return &home
+
 }
 
 func GetAlleyMarket(alleyNumber int) AlleyMarket {
@@ -161,11 +171,14 @@ func GetTown(townNumberStr string) (Town, error) {
 	var homeLevels []int
 	startNumber := townNumber * 64
 	max := 64
-	if startNumber+63 > len(Homes)-1 {
-		max = len(Homes) - startNumber
+	size, _ := orm.NewOrm().QueryTable("home").Count()
+	homesSize := int(size)
+	if startNumber+63 > homesSize-1 {
+		max = homesSize - startNumber
 	}
 	for i := 0; i < max; i++ {
-		homeLevels = append(homeLevels, Homes[startNumber+i].Level)
+		//		homeLevels = append(homeLevels, Homes[startNumber+i].Level)
+		homeLevels = append(homeLevels, getHome(startNumber+i).Level)
 	}
 
 	for i := 0; i < len(homeLevels)/8; i++ {
@@ -344,11 +357,12 @@ func StartAlleyCup() {
 	SetUsers()
 
 	alleysNumber := 0
-
-	if len(Homes)%8 == 0 {
-		alleysNumber = len(Homes) / 8
+	size, _ := orm.NewOrm().QueryTable("home").Count()
+	homesSize := int(size)
+	if homesSize%8 == 0 {
+		alleysNumber = homesSize / 8
 	} else {
-		alleysNumber = len(Homes)/8 + 1
+		alleysNumber = homesSize/8 + 1
 	}
 	for alleyNumber := 0; alleyNumber < alleysNumber; alleyNumber++ {
 		alley, _ := GetAlley(strconv.Itoa(alleyNumber))
@@ -633,15 +647,16 @@ func getCupStruct(cup Cup) CupStruct {
 
 func StartTownCup() {
 	//doing alley cup
-	SetHomes()
+	//	SetHomes()
 	SetUsers()
 
 	townsNumber := 0
-
-	if len(Homes)%64 == 0 {
-		townsNumber = len(Homes) / 64
+	size, _ := orm.NewOrm().QueryTable("home").Count()
+	homesSize := int(size)
+	if homesSize%64 == 0 {
+		townsNumber = homesSize / 64
 	} else {
-		townsNumber = len(Homes)/64 + 1
+		townsNumber = homesSize/64 + 1
 	}
 	for townNumber := 0; townNumber < townsNumber; townNumber++ {
 		town, _ := GetTown(strconv.Itoa(townNumber))

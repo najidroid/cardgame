@@ -221,10 +221,14 @@ func getRemainingTime(userTimeString string, level int) (delta int) {
 	//	fmt.Println("dd", dd)
 	//	fmt.Println(d)
 	//	fmt.Println(userTimeString)
-	if int(dd) >= 100*(level+1)*(level+1) {
+	if int(dd) >= getVjProduceTime(level) {
 		return 0
 	}
-	return 100*(level+1)*(level+1) - int(dd)
+	return getVjProduceTime(level) - int(dd)
+}
+
+func getVjProduceTime(level int) int {
+	return 100*(level+1)*(level+1) + 500
 }
 
 func convertUserStructToUser(u *UserStruct) (user *User) {
@@ -257,7 +261,7 @@ func GetOponent(uimei string) (user *UserStruct) {
 	usr := User{Id: randomNum}
 	orm.NewOrm().Read(&usr)
 	//	fmt.Println("user:", usr)
-	if usr.Imei != uimei {
+	if usr.Imei != uimei && len(user.Cards) > 0 {
 		return convertUserToUserStruct(&usr)
 	} else {
 		return GetOponent(uimei)
@@ -509,12 +513,12 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 	//	fmt.Println(len(oCards))
 	if len(oCards) > len(mCards) {
 		winner = -1
-		if isCup {
+		if !isCup {
 			op.Flags += 1
 		}
 	} else if len(oCards) < len(mCards) {
 		winner = 1
-		if isCup {
+		if !isCup {
 			me.Flags += 1
 		}
 	} else {
@@ -678,12 +682,13 @@ func getVjPrize(level int, cards []Card) int {
 		//1:winning colors, 2: loosing colors
 		vj += getCardValue(level, len(card.WinningColors), len(card.LoosingColors)) / 10
 	}
+	vj = vj/5 + 1
 	return vj
 }
 
 func getCardValue(level int, winColorNumber int, looseColorNumber int) int {
 	vj := 0
-	vj += allVjValues.LevelsValues[level].SafeBox[0]
+	vj += allVjValues.LevelsValues[level].SafeBox[1]
 	//	fmt.Println("base value", allVjValues.LevelsValues[level].SafeBox[0])
 	for i := 0; i < winColorNumber-1; i++ {
 		vj += allVjValues.WinColorImprovementPrice[i]
