@@ -273,9 +273,9 @@ func ChangeTeamState(teamState TeamState, uimei string) bool {
 		crd := cards[i]
 		if crd.Number == teamState.PersonNumber1 {
 			if crd.TeamState == "0" {
-				crd.TeamState = "1"
+				cards[i].TeamState = "1"
 			} else {
-				crd.TeamState = "0"
+				cards[i].TeamState = "0"
 			}
 			break
 		}
@@ -284,13 +284,14 @@ func ChangeTeamState(teamState TeamState, uimei string) bool {
 		crd := cards[i]
 		if crd.Number == teamState.PersonNumber2 {
 			if crd.TeamState == "0" {
-				crd.TeamState = "1"
+				cards[i].TeamState = "1"
 			} else {
-				crd.TeamState = "0"
+				cards[i].TeamState = "0"
 			}
 			break
 		}
 	}
+	user.Cards = cards
 	//	fmt.Println(user)
 	Update(convertUserStructToUser(user))
 	return true
@@ -375,36 +376,22 @@ func ChoosingTeam(imei string, cards BuyCards) BuyCards {
 }
 
 func BuyingCard(buyCard BuyCard, uimei string) bool {
-	if ok, _ := AddVJ(uimei, buyCard.DecreaseVJ, false); ok {
-		AddCard(buyCard.BoughtCard, uimei)
-		AddVJ(uimei, buyCard.DecreaseVJ, true)
-		return true
-	} else {
+	user := GetUserStruct(uimei)
+	if user.Credit+buyCard.DecreaseVJ < 0 {
 		return false
 	}
-}
-
-func ForooshCard(fCard ForooshCardStr, uimei string) bool {
-	SetUsers()
-	//	fmt.Println("foroosh card:", fCard)
-	user := GetUserStruct(uimei)
-	myCards := user.Cards
-	//	fmt.Println("my cads befor foroosh:", myCards)
-	increaseVj := getCardValue(user.Level, len(fCard.Card.WinningColors), len(fCard.Card.LoosingColors)) * 8 / 10
-	for i, card := range myCards {
-		if fCard.Card.Number == card.Number {
-			user.Cards = append(myCards[:i], myCards[i+1:]...)
-			break
-		}
+	if user.Diamond+buyCard.DecreaseDiamond < 0 {
+		return false
 	}
+	user.Credit += buyCard.DecreaseVJ
+	user.Diamond += buyCard.DecreaseDiamond
+	user.Cards = append(user.Cards, buyCard.BoughtCard)
+
 	Update(convertUserStructToUser(user))
-	//	fmt.Println("my cads after foroosh:", myCards)
-	AddVJ(uimei, increaseVj, true)
 	return true
 }
 
 func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
-	SetUsers()
 	user := GetUserStruct(uimei)
 
 	maxVjAmount := user.MaxVj
@@ -437,17 +424,36 @@ func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
 	}
 }
 
-func AddCard(card Card, uimei string) {
+func ForooshCard(fCard ForooshCardStr, uimei string) bool {
+	SetUsers()
+	//	fmt.Println("foroosh card:", fCard)
 	user := GetUserStruct(uimei)
-	//	fmt.Println(user)
-	/*for i := 0; i < len(cards); i++ {
-		crd := cards[i]
-		user.Cards[crd[0]] += int(crd[1])
-	}*/
-	user.Cards = append(user.Cards, card)
-	//	fmt.Println("adding card")
+	myCards := user.Cards
+	//	fmt.Println("my cads befor foroosh:", myCards)
+	increaseVj := getCardValue(user.Level, len(fCard.Card.WinningColors), len(fCard.Card.LoosingColors)) * 8 / 10
+	for i, card := range myCards {
+		if fCard.Card.Number == card.Number {
+			user.Cards = append(myCards[:i], myCards[i+1:]...)
+			break
+		}
+	}
 	Update(convertUserStructToUser(user))
+	//	fmt.Println("my cads after foroosh:", myCards)
+	AddVJ(uimei, increaseVj, true)
+	return true
 }
+
+//func AddCard(card Card, uimei string) {
+//	user := GetUserStruct(uimei)
+//	//	fmt.Println(user)
+//	/*for i := 0; i < len(cards); i++ {
+//		crd := cards[i]
+//		user.Cards[crd[0]] += int(crd[1])
+//	}*/
+//	user.Cards = append(user.Cards, card)
+//	//	fmt.Println("adding card")
+//	Update(convertUserStructToUser(user))
+//}
 
 func StartMatch(imeis Imeis, isCup bool) (MatchResult, int) {
 	myUimei := imeis.MyImei

@@ -65,6 +65,7 @@ type UserStruct struct {
 	Diamond  int
 	CupAlley int
 	CupTown  int
+	//0 means not done, 1 means done, 2 means prize got
 	Missions []int
 }
 
