@@ -62,7 +62,7 @@ func (u *MapController) GetCity() {
 // @Failure 403 :uaddress is empty
 // @router /alley/:alleynum [get]
 func (u *MapController) GetAlley() {
-	models.SetHomes()
+	//	models.SetHomes()
 	alleynum := u.GetString(":alleynum")
 	if alleynum != "" {
 		alley, err := models.GetAlley(alleynum)
@@ -82,7 +82,7 @@ func (u *MapController) GetAlley() {
 // @Failure 403 :uaddress is empty
 // @router /town/:townnum [get]
 func (u *MapController) GetTown() {
-	models.SetHomes()
+	//	models.SetHomes()
 	townNum := u.GetString(":townnum")
 	if townNum != "" {
 		alley, err := models.GetTown(townNum)
@@ -102,7 +102,7 @@ func (u *MapController) GetTown() {
 // @Failure 403 :uaddress is empty
 // @router /getvjalley/:uaddress [post]
 func (u *MapController) GetVjAlley() {
-	models.SetHomes()
+	//	models.SetHomes()
 	//uaddress := u.GetString(":uaddress")
 
 	var Ob models.GetVjAlley
@@ -120,7 +120,7 @@ func (u *MapController) GetVjAlley() {
 // @Failure 403 :uaddress is empty
 // @router /getvjtown/:uaddress [post]
 func (u *MapController) GetVjTown() {
-	models.SetHomes()
+	//	models.SetHomes()
 	//uaddress := u.GetString(":uaddress")
 
 	var Ob models.GetVjAlley
@@ -138,7 +138,7 @@ func (u *MapController) GetVjTown() {
 // @Failure 403 :uaddress is empty
 // @router /getmarketalleydata/:marketid [get]
 func (u *MapController) GetMarketAlleyData() {
-	models.SetHomes()
+	//	models.SetHomes()
 	marketId := u.GetString(":marketid")
 	if marketId != "" {
 		marketData, err := models.GetMarketAlleyData(marketId)
@@ -159,7 +159,7 @@ func (u *MapController) GetMarketAlleyData() {
 // @Failure 403 :uaddress is empty
 // @router /getmarkettowndata/:marketid [get]
 func (u *MapController) GetMarketTownData() {
-	models.SetHomes()
+	//	models.SetHomes()
 	marketId := u.GetString(":marketid")
 	if marketId != "" {
 		marketData, err := models.GetMarketTownData(marketId)

@@ -90,26 +90,26 @@ type MatchCap struct {
 	Winner int
 }
 
-func SetHomes() {
-	//	Homes = Homes[:0]
-	//var Homes []*Home
-	//	orm.NewOrm().QueryTable(new(Home)).All(&Homes)
-	//fmt.Println(err)
+//func SetHomes() {
+//	Homes = Homes[:0]
+//var Homes []*Home
+//	orm.NewOrm().QueryTable(new(Home)).All(&Homes)
+//fmt.Println(err)
+//}
 
-}
 func (home *Home) AddHome() {
 	//fmt.Println("home added?")
 	fmt.Println(orm.NewOrm().Insert(home))
 
 	//	Homes = append(Homes, home)
 
-	if home.Id%8 == 1 {
-		alleyMrkt := &AlleyMarket{home.Id/8 + 1, 1, "name", time.Now().UTC().Format(time.UnixDate), 5, "state", ""}
+	if home.HomeId%8 == 1 {
+		alleyMrkt := &AlleyMarket{home.HomeId/8 + 1, 1, "name", time.Now().UTC().Format(time.UnixDate), 5, "state", ""}
 		orm.NewOrm().Insert(alleyMrkt)
 	}
 
-	if home.Id%64 == 1 {
-		townMrkt := &TownMarket{home.Id/64 + 1, 1, 1, "name", time.Now().Add(time.Hour * (-12)).UTC().Format(time.UnixDate), 5, "state"}
+	if home.HomeId%64 == 1 {
+		townMrkt := &TownMarket{home.HomeId/64 + 1, 1, 1, "name", time.Now().Add(time.Hour * (-12)).UTC().Format(time.UnixDate), 5, "state"}
 		orm.NewOrm().Insert(townMrkt)
 	}
 
@@ -147,7 +147,8 @@ func GetAlley(alleyNumberStr string) (Alley, error) {
 
 func getHome(id int) *Home {
 	var home Home
-	orm.NewOrm().QueryTable("Home").Filter("Id", id).RelatedSel().One(&home)
+	orm.NewOrm().QueryTable("Home").Filter("HomeId", id).RelatedSel().One(&home)
+	fmt.Println("home:", home)
 	return &home
 
 }
@@ -178,7 +179,7 @@ func GetTown(townNumberStr string) (Town, error) {
 	}
 	for i := 0; i < max; i++ {
 		//		homeLevels = append(homeLevels, Homes[startNumber+i].Level)
-		homeLevels = append(homeLevels, getHome(startNumber+i).Level)
+		homeLevels = append(homeLevels, getHome(startNumber+1+i).Level)
 	}
 
 	for i := 0; i < len(homeLevels)/8; i++ {
@@ -355,7 +356,7 @@ func changeNameInMap(imei string, name string) {
 
 func StartAlleyCup() {
 	//doing alley cup
-	SetHomes()
+	//	SetHomes()
 	SetUsers()
 
 	alleysNumber := 0

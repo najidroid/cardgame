@@ -69,6 +69,11 @@ func SetUsers() []*User {
 	//		}
 	//	}
 
+	//	orm.NewOrm().QueryTable("home").Filter("HomeId", "5").Delete()
+	//	user := GetUserStruct("358121039509932")
+	//	user.Credit = 10000
+	//	Update(convertUserStructToUser(user))
+
 	return data
 }
 
