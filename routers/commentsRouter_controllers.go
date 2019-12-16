@@ -216,6 +216,15 @@ func init() {
 
     beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"] = append(beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"],
         beego.ControllerComments{
+            Method: "GetMissionPrize",
+            Router: `/getmissionprize/:uimei`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"] = append(beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"],
+        beego.ControllerComments{
             Method: "GetOponent",
             Router: `/getoponent/:uimei`,
             AllowHTTPMethods: []string{"get"},
@@ -299,6 +308,15 @@ func init() {
         beego.ControllerComments{
             Method: "StartMatch",
             Router: `/startmatch/:uimei`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"] = append(beego.GlobalControllerRouter["github.com/najidroid/cardGame/controllers:UserController"],
+        beego.ControllerComments{
+            Method: "UpdateMissions",
+            Router: `/updatemissions/:uimei`,
             AllowHTTPMethods: []string{"post"},
             MethodParams: param.Make(),
             Filters: nil,

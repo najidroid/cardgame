@@ -356,9 +356,6 @@ func changeNameInMap(imei string, name string) {
 
 func StartAlleyCup() {
 	//doing alley cup
-	//	SetHomes()
-	SetUsers()
-
 	alleysNumber := 0
 	size, _ := orm.NewOrm().QueryTable("home").Count()
 	homesSize := int(size)
@@ -380,6 +377,7 @@ func doAlleyCup(alley Alley, alleyNumber int) {
 
 	fmt.Println("home numbers: ", len(homeImeis))
 
+	//first round
 	var fRoundMatches []MatchCap
 	for i := 0; i < 4; i++ {
 		if homeImeis[i*2] == "0" {
@@ -403,7 +401,7 @@ func doAlleyCup(alley Alley, alleyNumber int) {
 
 	fmt.Println("first round matches: ", fRoundMatches)
 
-	//var secondRound SecondRound
+	//SecondRound
 	var sRoundMatches []MatchCap
 	for i := 0; i < 2; i++ {
 		var imei1, imei2 string
@@ -476,11 +474,25 @@ func doAlleyCup(alley Alley, alleyNumber int) {
 	alleyMarket := GetAlleyMarket(alleyNumber + 1)
 	if finalMatch.Winner == 1 && user1 != nil {
 		user1.CupAlley += 1
+		if user1.CupAlley == 1 {
+			user1.Missions[3] = 1
+		} else if user1.CupAlley == 10 {
+			user1.Missions[11] = 1
+		} else if user1.CupAlley == 50 {
+			user1.Missions[19] = 1
+		}
 		Update(convertUserStructToUser(user1))
 		alleyMarket.Name = user1.Name
 		alleyMarket.Imei = user1.Imei
 	} else if finalMatch.Winner == -1 && user2 != nil {
 		user2.CupAlley += 1
+		if user2.CupAlley == 1 {
+			user2.Missions[3] = 1
+		} else if user2.CupAlley == 10 {
+			user2.Missions[11] = 1
+		} else if user2.CupAlley == 50 {
+			user2.Missions[19] = 1
+		}
 		Update(convertUserStructToUser(user2))
 		alley.Name = finalMatch.Name2
 		alleyMarket.Name = user2.Name
@@ -649,10 +661,6 @@ func getCupStruct(cup Cup) CupStruct {
 }
 
 func StartTownCup() {
-	//doing alley cup
-	//	SetHomes()
-	SetUsers()
-
 	townsNumber := 0
 	size, _ := orm.NewOrm().QueryTable("home").Count()
 	homesSize := int(size)
@@ -772,10 +780,28 @@ func doTownCup(town Town, townNumber int) {
 	fmt.Println("twon market: ", townMarket)
 	if finalMatch.Winner == 1 && user1 != nil {
 		user1.CupTown += 1
+		if user1.CupTown == 1 {
+			user1.Missions[7] = 1
+		} else if user1.CupTown == 5 {
+			user1.Missions[15] = 1
+		} else if user1.CupTown == 20 {
+			user1.Missions[18] = 1
+		} else if user1.CupTown == 50 {
+			user1.Missions[21] = 1
+		}
 		Update(convertUserStructToUser(user1))
 		townMarket.Name = user1.Name
 	} else if finalMatch.Winner == -1 && user2 != nil {
 		user2.CupTown += 1
+		if user2.CupTown == 1 {
+			user2.Missions[7] = 1
+		} else if user2.CupTown == 5 {
+			user2.Missions[15] = 1
+		} else if user2.CupTown == 20 {
+			user2.Missions[18] = 1
+		} else if user2.CupTown == 50 {
+			user2.Missions[21] = 1
+		}
 		Update(convertUserStructToUser(user2))
 		townMarket.Name = user2.Name
 	}

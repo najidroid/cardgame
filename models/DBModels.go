@@ -41,6 +41,7 @@ type User struct {
 	CupAlley   int
 	CupCity    int
 	Missions   string `orm:"size(1000)"`
+	Token      string
 }
 
 type UserStruct struct {
@@ -67,6 +68,7 @@ type UserStruct struct {
 	CupTown  int
 	//0 means not done, 1 means done, 2 means prize got
 	Missions []int
+	Token    string
 }
 
 type Card struct {
@@ -79,7 +81,6 @@ type Card struct {
 }
 
 type Event struct {
-	//	Body []string
 	Id      int
 	Name    string
 	Time    string

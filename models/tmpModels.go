@@ -137,3 +137,9 @@ type Name struct {
 	Name     string
 	ReduceVj int
 }
+
+type MissionPrize struct {
+	MissionNumber  int
+	MissionContent int
+	Token          string
+}

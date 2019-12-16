@@ -74,6 +74,9 @@ func SetUsers() []*User {
 	//	user.Credit = 10000
 	//	Update(convertUserStructToUser(user))
 
+	//	StartAlleyCup()
+	//	StartTownCup()
+
 	return data
 }
 
@@ -117,7 +120,8 @@ func AddUser(uimei string) (u *User) {
 
 	avatarCode := rand.Intn(30) + 1
 	uu := User{id, uimei, "بدون نام" + strconv.Itoa(id), avatarCode, 20, 60, 0, "Sat Jul 16 15:36:16 UTC 2015", coor,
-		string(cardsJson), string(messagesJson), string(eventsJson), 0, 0, getMaxXp(1), false, 0, 0, 0, string(missionsJson)}
+		string(cardsJson), string(messagesJson), string(eventsJson), 0, 0, getMaxXp(1), false, 0, 0, 0, string(missionsJson),
+		GenerateToken()}
 
 	_, err := Save(&uu)
 	fmt.Println(err)
@@ -126,6 +130,18 @@ func AddUser(uimei string) (u *User) {
 	//	HomeList[uimei] = &home
 	//	RankImeiList = append(RankImeiList, uimei)
 	return &uu
+}
+
+func GenerateToken() string {
+	bytes := make([]byte, 15)
+	for i := 0; i < 15; i++ {
+		bytes[i] = byte(randomInt(65, 90))
+	}
+	return string(bytes)
+}
+
+func randomInt(min, max int) int {
+	return min + rand.Intn(max-min)
 }
 
 func getMaxXp(level int) int {
@@ -143,7 +159,7 @@ func convertUserToUserStruct(uu *User) (u *UserStruct) {
 	json.Unmarshal([]byte(uu.Missions), &missions)
 	ur := UserStruct{uu.Id, uu.Imei, uu.Name, uu.AvatarCode, uu.Credit, uu.MaxVj, uu.Level,
 		uu.CreateVjTime, uu.Coordinate, crds, msgs, evnts, uu.Flags, uu.Xp, uu.MaxXp,
-		uu.IsMail, uu.Diamond, uu.CupAlley, uu.CupCity, missions}
+		uu.IsMail, uu.Diamond, uu.CupAlley, uu.CupCity, missions, uu.Token}
 	//	UserList[uu.Imei] = &ur
 	return &ur
 }
@@ -237,14 +253,13 @@ func getVjProduceTime(level int) int {
 }
 
 func convertUserStructToUser(u *UserStruct) (user *User) {
-	//fmt.Println(u)
 	messagesJson, _ := json.Marshal(u.Messages)
 	cardsJson, _ := json.Marshal(u.Cards)
 	eventsJson, _ := json.Marshal(u.Event)
 	missionsJson, _ := json.Marshal(u.Missions)
 	uu := User{u.Id, u.Imei, u.Name, u.AvatarCode, u.Credit, u.MaxVj, u.Level, u.CreateVjTime,
 		u.Coordinate, string(cardsJson), string(messagesJson), string(eventsJson),
-		u.Flags, u.Xp, u.MaxXp, u.IsMail, u.Diamond, u.CupAlley, u.CupTown, string(missionsJson)}
+		u.Flags, u.Xp, u.MaxXp, u.IsMail, u.Diamond, u.CupAlley, u.CupTown, string(missionsJson), u.Token}
 	return &uu
 }
 
@@ -258,7 +273,6 @@ func GetCardsAmount(uimei string) (u int) {
 }
 
 func GetOponent(uimei string) (user *UserStruct) {
-	SetUsers()
 	//	u := GetUserStruct(uimei)
 
 	cnt, _ := orm.NewOrm().QueryTable("user").Count()
@@ -341,8 +355,6 @@ func AddColor(addingColor Color, uimei string) (bool, Color) {
 }
 
 func RemoveColor(color Color, uimei string) (bool, Color) {
-
-	SetUsers()
 	user := GetUserStruct(uimei)
 	//fmt.Println(user)
 
@@ -400,6 +412,19 @@ func BuyingCard(buyCard BuyCard, uimei string) bool {
 	return true
 }
 
+func UpdateMissions(imei string, userStruct UserStruct) bool {
+	usr := GetUserStruct(imei)
+	usr.Missions = userStruct.Missions
+	_, err := Update(convertUserStructToUser(usr))
+	fmt.Println("missions:", usr.Missions)
+	if err == nil {
+		fmt.Println("err", err)
+		return false
+	} else {
+		return true
+	}
+}
+
 func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
 	user := GetUserStruct(uimei)
 
@@ -434,11 +459,10 @@ func AddVJ(uimei string, vjAmount int, isAdd bool) (bool, int) {
 }
 
 func ForooshCard(fCard ForooshCardStr, uimei string) bool {
-	SetUsers()
-	//	fmt.Println("foroosh card:", fCard)
+	fmt.Println("foroosh card:", fCard)
 	user := GetUserStruct(uimei)
 	myCards := user.Cards
-	//	fmt.Println("my cads befor foroosh:", myCards)
+	fmt.Println("my cads befor foroosh:", myCards)
 	increaseVj := getCardValue(user.Level, len(fCard.Card.WinningColors), len(fCard.Card.LoosingColors)) * 8 / 10
 	for i, card := range myCards {
 		if fCard.Card.Number == card.Number {
@@ -446,23 +470,12 @@ func ForooshCard(fCard ForooshCardStr, uimei string) bool {
 			break
 		}
 	}
+
 	Update(convertUserStructToUser(user))
-	//	fmt.Println("my cads after foroosh:", myCards)
+	fmt.Println("my cads after foroosh:", myCards)
 	AddVJ(uimei, increaseVj, true)
 	return true
 }
-
-//func AddCard(card Card, uimei string) {
-//	user := GetUserStruct(uimei)
-//	//	fmt.Println(user)
-//	/*for i := 0; i < len(cards); i++ {
-//		crd := cards[i]
-//		user.Cards[crd[0]] += int(crd[1])
-//	}*/
-//	user.Cards = append(user.Cards, card)
-//	//	fmt.Println("adding card")
-//	Update(convertUserStructToUser(user))
-//}
 
 func StartMatch(imeis Imeis, isCup bool) (MatchResult, int) {
 	myUimei := imeis.MyImei
@@ -520,11 +533,33 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 		winner = -1
 		if !isCup {
 			op.Flags += 1
+			if op.Flags == 5 {
+				op.Missions[6] = 1
+			} else if op.Flags == 20 {
+				op.Missions[9] = 1
+			} else if op.Flags == 50 {
+				op.Missions[14] = 1
+			} else if op.Flags == 200 {
+				op.Missions[17] = 1
+			} else if op.Flags == 500 {
+				op.Missions[22] = 1
+			}
 		}
 	} else if len(oCards) < len(mCards) {
 		winner = 1
 		if !isCup {
 			me.Flags += 1
+			if me.Flags == 5 {
+				me.Missions[6] = 1
+			} else if me.Flags == 20 {
+				me.Missions[9] = 1
+			} else if me.Flags == 50 {
+				me.Missions[14] = 1
+			} else if me.Flags == 200 {
+				me.Missions[17] = 1
+			} else if me.Flags == 500 {
+				me.Missions[22] = 1
+			}
 		}
 	} else {
 		winner = 0
@@ -541,6 +576,21 @@ func analyzeData(me *UserStruct, op *UserStruct, myCards []Card, opCards []Card,
 			//			fmt.Println("max Xp", getMaxXp(me.Level))
 			if me.Xp > getMaxXp(me.Level) {
 				me.Level++
+				if me.Level == 2 {
+					me.Missions[8] = 1
+				} else if me.Level == 3 {
+					me.Missions[10] = 1
+				} else if me.Level == 4 {
+					me.Missions[13] = 1
+				} else if me.Level == 5 {
+					me.Missions[16] = 1
+				} else if me.Level == 6 {
+					me.Missions[20] = 1
+				} else if me.Level == 7 {
+					me.Missions[23] = 1
+				} else if me.Level == 8 {
+					me.Missions[24] = 1
+				}
 				me.Xp = 0
 				me.MaxXp = getMaxXp(me.Level)
 				me.MaxVj = allVjValues.LevelsValues[me.Level].SafeBox[0]
@@ -951,8 +1001,6 @@ func getCards(cardsStr []Card) []Card {
 }
 
 func GetMatch(uid string, imeis Imeis) MatchResult {
-	SetUsers()
-
 	id, _ := strconv.ParseInt(uid, 0, 64)
 	var m MatchCards
 	orm.NewOrm().QueryTable(new(MatchCards)).Filter("Id", id).One(&m)
@@ -1197,7 +1245,6 @@ func ChangeAvatar(imei string, avatar Avatar) Avatar {
 }
 
 func ChangeName(imei string, name Name) Name {
-	SetUsers()
 	user := GetUserStruct(imei)
 	newName := name.Name
 	if ok, _ := AddVJ(imei, -0, false); ok {
@@ -1209,6 +1256,22 @@ func ChangeName(imei string, name Name) Name {
 		return Name{newName, -0}
 	} else {
 		return Name{user.Name, 0}
+	}
+}
+
+func GetMissionPrize(imei string, missionPrize MissionPrize) bool {
+	user := GetUserStruct(imei)
+	if user.Token == missionPrize.Token {
+		if user.Missions[missionPrize.MissionNumber] != 1 {
+			return false
+		}
+		user.Diamond += missionPrize.MissionContent
+		user.Missions[missionPrize.MissionNumber] = 2
+		Update(convertUserStructToUser(user))
+		fmt.Println("user:", user)
+		return true
+	} else {
+		return false
 	}
 }
 

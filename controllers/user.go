@@ -20,7 +20,6 @@ type UserController struct {
 // @router / [get]
 func (u *UserController) GetAll() {
 	users := models.SetUsers()
-	models.SetUsers()
 	u.Data["json"] = users
 	u.ServeJSON()
 }
@@ -32,7 +31,6 @@ func (u *UserController) GetAll() {
 // @Failure 403 :uid is empty
 // @router /:uid [get]
 func (u *UserController) Get() {
-	models.SetUsers()
 	uid := u.GetString(":uid")
 	fmt.Println(uid)
 	if uid != "" {
@@ -53,7 +51,6 @@ func (u *UserController) Get() {
 // @Failure 403 :uid is empty
 // @router /createvj/:uimei [get]
 func (u *UserController) CreateVj() {
-	models.SetUsers()
 	uimei := u.GetString(":uimei")
 	if uimei != "" {
 		user, err := models.CreateVj(uimei)
@@ -73,7 +70,6 @@ func (u *UserController) CreateVj() {
 // @Failure 403 :uid is empty
 // @router /match/:uimei [get]
 func (u *UserController) GetCardAmount() {
-	models.SetUsers()
 	uimei := u.GetString(":uimei")
 	if uimei != "" {
 		user := models.GetCardsAmount(uimei)
@@ -160,6 +156,48 @@ func (u *UserController) ForooshCards() {
 	json.Unmarshal(u.Ctx.Input.RequestBody, &Ob)
 	fmt.Println(uimei)
 	ok := models.ForooshCard(Ob, uimei)
+	if ok {
+		u.Data["json"] = Ob
+		fmt.Println(Ob)
+	} else {
+		u.Data["json"] = nil
+	}
+	u.ServeJSON()
+}
+
+// @Title Get
+// @Description get user by uid
+// @Param	uid		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.User
+// @Failure 403 :uimei is empty
+// @router /updatemissions/:uimei [post]
+func (u *UserController) UpdateMissions() {
+	uimei := u.GetString(":uimei")
+	var Ob models.UserStruct
+	json.Unmarshal(u.Ctx.Input.RequestBody, &Ob)
+
+	ok := models.UpdateMissions(uimei, Ob)
+	if ok {
+		u.Data["json"] = Ob
+		fmt.Println(Ob)
+	} else {
+		u.Data["json"] = nil
+	}
+	u.ServeJSON()
+}
+
+// @Title Get
+// @Description get user by uid
+// @Param	uid		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.User
+// @Failure 403 :uimei is empty
+// @router /getmissionprize/:uimei [post]
+func (u *UserController) GetMissionPrize() {
+	uimei := u.GetString(":uimei")
+	var Ob models.MissionPrize
+	json.Unmarshal(u.Ctx.Input.RequestBody, &Ob)
+
+	ok := models.GetMissionPrize(uimei, Ob)
 	if ok {
 		u.Data["json"] = Ob
 		fmt.Println(Ob)
@@ -296,7 +334,6 @@ func (u *UserController) GetPlayedMatch() {
 // @Failure 403 :uimei is empty
 // @router /startmatch/:uimei [post]
 func (u *UserController) StartMatch() {
-	models.SetUsers()
 	//uimei := u.GetString(":uimei")
 	var Ob models.Imeis
 
@@ -321,7 +358,6 @@ func (u *UserController) StartMatch() {
 // @Failure 403 :uimei is empty
 // @router /messagehistory/:messageid [post]
 func (u *UserController) GetMessageHistory() {
-	models.SetUsers()
 	messageId := u.GetString(":messageid")
 
 	var Ob models.Imeis
@@ -342,7 +378,6 @@ func (u *UserController) GetMessageHistory() {
 // @Failure 403 :uimei is empty
 // @router /sendmessage/:messageid [post]
 func (u *UserController) SendMessage() {
-	models.SetUsers()
 	messageId := u.GetString(":messageid")
 
 	var Ob models.SentMessage
@@ -363,7 +398,6 @@ func (u *UserController) SendMessage() {
 // @Failure 403 :uimei is empty
 // @router /sendchatmessage/:imei [post]
 func (u *UserController) SendChatMsg() {
-	models.SetUsers()
 	uimei := u.GetString(":imei")
 
 	var Ob models.ChatMessage
