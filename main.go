@@ -25,8 +25,8 @@ func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 
 	orm.DefaultTimeLoc = time.UTC
-	orm.RegisterDataBase("default", "mysql", "root:root@/cardgame?charset=utf8")
-	//	orm.RegisterDataBase("default", "mysql", "uongnacbhojt7sh8:335XIbI4t5NcdlUTC3la@tcp(bibrlater1qedqzgtdac-mysql.services.clever-cloud.com:3306)/bibrlater1qedqzgtdac?charset=utf8")
+	//	orm.RegisterDataBase("default", "mysql", "root:root@/cardgame?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "uongnacbhojt7sh8:335XIbI4t5NcdlUTC3la@tcp(bibrlater1qedqzgtdac-mysql.services.clever-cloud.com:3306)/bibrlater1qedqzgtdac?charset=utf8")
 
 }
 
